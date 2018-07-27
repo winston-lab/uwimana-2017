@@ -6,7 +6,7 @@ configfile: "config.yaml"
 SAMPLES = config["samples"]
 
 localrules:
-    all, convert_coverage, make_stranded_genome
+    all, convert_coverage
 
 rule all:
     input:
@@ -15,15 +15,16 @@ rule all:
 
 rule convert_coverage:
     input:
-        lambda wildcards: "data/" + SAMPLES[wildcards.sample]["id"] + "_pos.bw" if wildcards.strand=="plus" else "data/" + SAMPLES[wildcards.sample]["id"] + "_neg.bw"
+        coverage = lambda wildcards: "data/" + SAMPLES[wildcards.sample]["id"] + "_pos.bw" if wildcards.strand=="plus" else "data/" + SAMPLES[wildcards.sample]["id"] + "_neg.bw",
+        chrsizes = config["chrsizes"]
     output:
         bedgraph = "coverage/{sample}_{strand}.bedgraph",
     log: "logs/convert_coverage/convert_coverage-{sample}-{strand}.log"
     wildcard_constraints:
         strand="plus|minus"
-
     shell: """
-        (bigWigToBedGraph {input} {output.bedgraph}) &> {log}
+        (bigWigToBedGraph {input.coverage} coverage/.{wildcards.sample}-{wildcards.strand}.temp) &> {log}
+        (bedtools unionbedg -i coverage/.{wildcards.sample}-{wildcards.strand}.temp <(echo) -empty -g {input.chrsizes} | cut -f1-4 | awk 'BEGIN{{FS=OFS="\t"}}{{$4 < 0 ? $4=-$4: $4; print $0}}'> {output.bedgraph}) &>> {log}
         """
 
 rule make_stranded_bedgraph:
@@ -39,26 +40,16 @@ rule make_stranded_bedgraph:
         (bash scripts/makeStrandedBedgraph.sh {input.minus} {input.plus} > {output.antisense}) &>> {log}
         """
 
-rule make_stranded_genome:
-    input:
-        exp = config["chrsizes"],
-    output:
-        exp = os.path.splitext(config["chrsizes"])[0] + "-STRANDED.tsv",
-    log: "logs/make_stranded_genome.log"
-    shell: """
-        (awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2}}{{print $1"-minus", $2}}' {input.exp} > {output.exp}) &> {log}
-        """
-
 rule bedgraph_to_bigwig:
     input:
         bedgraph = "coverage/{sample}_{strand}.bedgraph",
-        chrsizes = lambda wildcards: config["chrsizes"] if wildcards.strand in ["plus", "minus"] else os.path.splitext(config["chrsizes"])[0] + "-STRANDED.tsv"
+        fasta = config["genome"]
     output:
         "coverage/{sample}_{strand}.bw",
+    params:
+        stranded = lambda wc: [] if wc.strand in ["plus", "minus"] else """| awk 'BEGIN{{FS=OFS="\t"}}{{print $1"-plus", $2; print $1"-minus", $2}}' | LC_COLLATE=C sort -k1,1"""
     log: "logs/bedgraph_to_bigwig/bedgraph_to_bigwig-{sample}-{strand}.log"
     shell: """
-        (bedGraphToBigWig {input.bedgraph} {input.chrsizes} {output}) &> {log}
+        (bedGraphToBigWig {input.bedgraph} <(faidx {input.fasta} -i chromsizes {params.stranded}) {output}) &> {log}
         """
-
-
 

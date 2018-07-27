@@ -1,6 +1,6 @@
 __default__:
     queue : "short"
-    time : 60 
+    time : 60
     n : 1
     mem : 2000
     name : "{rule}.{wildcards}"
