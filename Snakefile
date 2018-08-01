@@ -16,7 +16,7 @@ rule all:
 rule convert_coverage:
     input:
         coverage = lambda wildcards: "data/" + SAMPLES[wildcards.sample]["id"] + "_pos.bw" if wildcards.strand=="plus" else "data/" + SAMPLES[wildcards.sample]["id"] + "_neg.bw",
-        chrsizes = config["chrsizes"]
+        fasta = config["fasta"]
     output:
         bedgraph = "coverage/{sample}_{strand}.bedgraph",
     log: "logs/convert_coverage/convert_coverage-{sample}-{strand}.log"
@@ -24,7 +24,7 @@ rule convert_coverage:
         strand="plus|minus"
     shell: """
         (bigWigToBedGraph {input.coverage} coverage/.{wildcards.sample}-{wildcards.strand}.temp) &> {log}
-        (bedtools unionbedg -i coverage/.{wildcards.sample}-{wildcards.strand}.temp <(echo) -empty -g {input.chrsizes} | cut -f1-4 | awk 'BEGIN{{FS=OFS="\t"}}{{$4 < 0 ? $4=-$4: $4; print $0}}'> {output.bedgraph}) &>> {log}
+        (bedtools unionbedg -i coverage/.{wildcards.sample}-{wildcards.strand}.temp <(echo) -empty -g <(faidx {input.fasta} -i chromsizes) | cut -f1-4 | awk 'BEGIN{{FS=OFS="\t"}}{{$4 < 0 ? $4=-$4: $4; print $0}}'> {output.bedgraph}) &>> {log}
         """
 
 rule make_stranded_bedgraph:
@@ -43,7 +43,7 @@ rule make_stranded_bedgraph:
 rule bedgraph_to_bigwig:
     input:
         bedgraph = "coverage/{sample}_{strand}.bedgraph",
-        fasta = config["genome"]
+        fasta = config["fasta"]
     output:
         "coverage/{sample}_{strand}.bw",
     params:
