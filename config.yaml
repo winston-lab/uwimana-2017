@@ -1,0 +1,40 @@
+fasta : ../../genomefiles_cerevisiae/S_cerevisiae.R64-2-1.fa
+
+samples:
+    WT-polyA-1:
+        id: GSM2385251_FR_R16
+        group: WT-polyA
+    WT-polyA-2:
+        id: GSM2385252_FR_R17
+        group: WT-polyA
+    spt6-1004-polyA-1:
+        id: GSM2385253_FR_R18
+        group: spt6-1004-polyA
+    spt6-1004-polyA-2:
+        id: GSM2385254_FR_R19
+        group: spt6-1004-polyA
+    WT-polyA-3:
+        id: GSM2385255_FR_m_972_1
+        group: WT-polyA
+    WT-polyA-4:
+        id: GSM2385256_FR_m_972_2
+        group: WT-polyA
+    spt6-1004-polyA-3:
+        id: GSM2385257_FR_m_974_1
+        group: spt6-1004-polyA
+    spt6-1004-polyA-4:
+        id: GSM2385258_FR_m_974_2
+        group: spt6-1004-polyA
+    WT-rRNAdepl-1:
+        id: GSM2385259_FR_r_972_1
+        group: WT-rRNAdepl
+    WT-rRNAdepl-2:
+        id: GSM2385260_FR_r_972_2
+        group: WT-rRNAdepl
+    spt6-1004-rRNAdepl-1:
+        id: GSM2385261_FR_r_974_1
+        group: spt6-1004-rRNAdepl
+    spt6-1004-rRNAdepl-2:
+        id: GSM2385262_FR_r_974_2
+        group: spt6-1004-rRNAdepl
+

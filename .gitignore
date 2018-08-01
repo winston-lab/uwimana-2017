@@ -10,8 +10,6 @@ rulegraph.svg
 dag.svg
 Rplots.pdf
 
-config.yaml
-
 !fastq/.gitkeep
 !logs/.gitkeep
 !logs/cluster/
