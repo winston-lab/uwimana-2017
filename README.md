@@ -3,7 +3,7 @@
 
 ## description
 
-Code used to convert RNA-seq coverage from [Uwimana *et al*., 2017](https://doi.org/10.1093/nar/gkx242) into coverage files compatible with [data integration](https://github.com/winston-lab/integrated-datavis) and other pipelines. The archived version of this analysis used in [our preprint](https://doi.org/10.1101/347575) is available at [Zenodo](https://doi.org/10.5281/zenodo.1325930).
+Code used to convert RNA-seq coverage from [Uwimana *et al*., 2017](https://doi.org/10.1093/nar/gkx242) into coverage files compatible with [data integration](https://github.com/winston-lab/integrated-datavis) and other pipelines. The archived version of this analysis used in our [2018 Spt6 publication](https://doi.org/10.1016/j.molcel.2018.09.005) is available at [Zenodo](https://doi.org/10.5281/zenodo.1409826).
 
 ## requirements
 
